@@ -1,11 +1,82 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f6eee8">
+  <meta name="description" content="Demonstração de catálogo digital da Dayanne Modas.">
+  <title>Dayanne Modas | Catálogo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Italiana&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Welcome to Dayanne Modas</h1>
+  <header class="topbar">
+    <a class="brand" href="#inicio" aria-label="Dayanne Modas — início">
+      <img src="imagens/logo.jpg" alt="Logo Dayanne Modas" width="64" height="64">
+      <span>Dayanne Modas</span>
+    </a>
+    <a class="instagram-link" href="https://www.instagram.com/dayannemodas__/" target="_blank" rel="noopener noreferrer" aria-label="Abrir Instagram da Dayanne Modas">Instagram</a>
+  </header>
+
+  <main>
+    <section class="hero" id="inicio">
+      <div class="hero__media" aria-hidden="true">
+        <img src="imagens/look-assimetrico.jpeg" alt="" fetchpriority="high">
+      </div>
+      <div class="hero__content">
+        <p class="eyebrow">Elegância em cada detalhe</p>
+        <h1>Seu próximo look começa aqui.</h1>
+        <p>Uma seleção especial de moda feminina e moda praia para você conhecer, escolher e consultar pelo WhatsApp.</p>
+        <a class="button button--primary" href="#catalogo">Ver peças</a>
+      </div>
+    </section>
+
+    <section class="catalog-section" id="catalogo" aria-labelledby="catalog-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">Vitrine Dayanne</p>
+          <h2 id="catalog-title">Escolha seu favorito</h2>
+        </div>
+        <p class="demo-note"><strong>Demonstração:</strong> nomes, preços, tamanhos e cores abaixo são exemplos e ainda precisam ser confirmados pela loja.</p>
+      </div>
+      <div class="filters" role="group" aria-label="Filtrar produtos">
+        <button class="filter is-active" type="button" data-filter="todas" aria-pressed="true">Todas</button>
+        <button class="filter" type="button" data-filter="feminina" aria-pressed="false">Moda feminina</button>
+        <button class="filter" type="button" data-filter="praia" aria-pressed="false">Moda praia</button>
+      </div>
+      <div class="product-grid" id="product-grid" aria-live="polite"></div>
+    </section>
+
+    <section class="how-it-works" aria-labelledby="how-title">
+      <p class="eyebrow">Simples e pessoal</p>
+      <h2 id="how-title">Gostou de uma peça?</h2>
+      <p>Escolha tamanho e cor, confira a mensagem pronta e fale diretamente com a equipe da Dayanne Modas. A disponibilidade é confirmada no atendimento.</p>
+      <a class="text-link" href="https://linktr.ee/db.showroom" target="_blank" rel="noopener noreferrer">Visitar links oficiais</a>
+    </section>
+  </main>
+
+  <footer>
+    <img src="imagens/logo.jpg" alt="" width="52" height="52">
+    <div>
+      <strong>Dayanne Modas</strong>
+      <p>Barra de Jangada · Jaboatão dos Guararapes</p>
+    </div>
+    <p class="footer-note">Mostruário privado · apresentação local</p>
+  </footer>
+
+  <dialog class="message-dialog" id="message-dialog" aria-labelledby="dialog-title">
+    <button class="dialog-close" type="button" aria-label="Fechar prévia">×</button>
+    <p class="eyebrow">Mensagem pronta</p>
+    <h2 id="dialog-title">Consultar pelo WhatsApp</h2>
+    <p class="dialog-help">Confira a mensagem antes de abrir o aplicativo:</p>
+    <div class="message-preview" id="message-preview"></div>
+    <a class="button button--whatsapp" id="whatsapp-link" href="#" target="_blank" rel="noopener noreferrer">Abrir WhatsApp</a>
+    <p class="manual-note">O envio só acontece quando você confirmar dentro do WhatsApp.</p>
+  </dialog>
+
+  <script src="catalogo.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
