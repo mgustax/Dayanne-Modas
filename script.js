@@ -3,22 +3,69 @@ const filters = document.querySelectorAll(".filter");
 const dialog = document.querySelector("#message-dialog");
 const messagePreview = document.querySelector("#message-preview");
 const whatsappLink = document.querySelector("#whatsapp-link");
-const dialogClose = document.querySelector(".dialog-close");
+const messageDialogClose = document.querySelector(".message-dialog-close");
+const imageDialog = document.querySelector("#image-dialog");
+const imageDialogPhoto = document.querySelector("#image-dialog-photo");
+const imageDialogCaption = document.querySelector("#image-dialog-caption");
+const imageDialogCounter = document.querySelector("#image-dialog-counter");
+const imageDialogClose = document.querySelector(".image-dialog-close");
+const previousImageButton = document.querySelector(".image-nav--previous");
+const nextImageButton = document.querySelector(".image-nav--next");
+
+let activeImageProduct = null;
+let activeImageIndex = 0;
+let lastImageTrigger = null;
 
 function optionsMarkup(type, values, productId) {
   const label = type === "size" ? "Tamanho" : "Cor";
-  const optionText = type === "size" ? "Selecione o tamanho" : "Selecione a cor";
-  return `<label class="field"><span>${label}</span><select data-option="${type}" data-product="${productId}" aria-label="${label}"><option value="">${optionText}</option>${values.map((value) => `<option value="${value}">${value}</option>`).join("")}</select></label>`;
+  const name = `${productId}-${type}`;
+  const colorClass = type === "color" ? " option-label--color" : "";
+
+  return `
+    <fieldset class="option-group" data-option-group="${type}" aria-describedby="${productId}-error">
+      <legend>${label}</legend>
+      <div class="option-list">
+        ${values.map((value, index) => {
+          const inputId = `${name}-${index}`;
+          const colorSample = type === "color" ? `<span class="color-sample" style="--sample-color: ${colorValue(value)}" aria-hidden="true"></span>` : "";
+          return `<input class="option-input" type="radio" id="${inputId}" name="${name}" value="${value}" data-option="${type}"><label class="option-label${colorClass}" for="${inputId}">${colorSample}<span>${value}</span></label>`;
+        }).join("")}
+      </div>
+    </fieldset>`;
+}
+
+function colorValue(colorName) {
+  const colors = {
+    "Preto": "#24201e",
+    "Areia": "#c9ad8a",
+    "Off-white": "#f3eee4",
+    "Rosa": "#e6a9b0",
+    "Verde sálvia": "#aebd9e",
+    "Vermelho": "#b62f2f",
+    "Cobre": "#a85f42"
+  };
+  return colors[colorName] || "#b8aaa3";
+}
+
+function productImages(product) {
+  return Array.isArray(product.imagens) && product.imagens.length ? product.imagens : [product.imagem];
 }
 
 function productMarkup(product) {
+  const images = productImages(product);
   return `
     <article class="product-card" data-category="${product.categoria}" data-product-id="${product.id}">
-      <div class="product-card__image"><img src="${product.imagem}" alt="${product.imagemAlt}" loading="lazy"><span class="product-tag">${product.categoriaLabel}</span></div>
+      <div class="product-card__image">
+        <button class="product-card__image-button" type="button" data-image-product="${product.id}" aria-label="Ampliar foto de ${product.nome}">
+          <img src="${images[0]}" alt="${product.imagemAlt}" loading="lazy">
+          <span class="zoom-icon" aria-hidden="true">⌕</span>
+        </button>
+        <span class="product-tag">${product.categoriaLabel}</span>
+      </div>
       <div class="product-card__body">
         <div class="product-card__heading"><h3>${product.nome}</h3><p>${product.preco}<small>valor de exemplo</small></p></div>
         <div class="product-options">${optionsMarkup("size", product.tamanhos, product.id)}${optionsMarkup("color", product.cores, product.id)}</div>
-        <p class="selection-error" role="alert" aria-live="polite"></p>
+        <p class="selection-error" id="${product.id}-error" role="alert" aria-live="polite"></p>
         <button class="button button--outline consult-button" type="button" data-product="${product.id}">Consultar pelo WhatsApp</button>
       </div>
     </article>`;
@@ -36,8 +83,10 @@ function makeMessage(product, size, color) {
 function openPreview(button) {
   const product = CATALOGO.produtos.find((item) => item.id === button.dataset.product);
   const card = button.closest(".product-card");
-  const size = card.querySelector('[data-option="size"]').value;
-  const color = card.querySelector('[data-option="color"]').value;
+  const sizeInput = card.querySelector('[data-option="size"]:checked');
+  const colorInput = card.querySelector('[data-option="color"]:checked');
+  const size = sizeInput?.value;
+  const color = colorInput?.value;
   const error = card.querySelector(".selection-error");
   const missing = [];
   if (!size) missing.push("o tamanho");
@@ -54,6 +103,30 @@ function openPreview(button) {
   dialog.showModal();
 }
 
+function updateImageDialog() {
+  const images = productImages(activeImageProduct);
+  imageDialogPhoto.src = images[activeImageIndex];
+  imageDialogPhoto.alt = activeImageProduct.imagemAlt;
+  imageDialogCaption.textContent = activeImageProduct.nome;
+  imageDialogCounter.textContent = images.length > 1 ? `${activeImageIndex + 1} de ${images.length}` : "";
+  previousImageButton.hidden = images.length < 2;
+  nextImageButton.hidden = images.length < 2;
+}
+
+function openImagePreview(button) {
+  activeImageProduct = CATALOGO.produtos.find((item) => item.id === button.dataset.imageProduct);
+  activeImageIndex = 0;
+  lastImageTrigger = button;
+  updateImageDialog();
+  imageDialog.showModal();
+}
+
+function changeImage(step) {
+  const images = productImages(activeImageProduct);
+  activeImageIndex = (activeImageIndex + step + images.length) % images.length;
+  updateImageDialog();
+}
+
 filters.forEach((filterButton) => {
   filterButton.addEventListener("click", () => {
     filters.forEach((button) => {
@@ -68,15 +141,31 @@ filters.forEach((filterButton) => {
 grid.addEventListener("click", (event) => {
   const button = event.target.closest(".consult-button");
   if (button) openPreview(button);
+  const imageButton = event.target.closest(".product-card__image-button");
+  if (imageButton) openImagePreview(imageButton);
 });
 
 grid.addEventListener("change", (event) => {
-  if (event.target.matches("select")) event.target.closest(".product-card").querySelector(".selection-error").textContent = "";
+  if (event.target.matches('.option-input')) event.target.closest(".product-card").querySelector(".selection-error").textContent = "";
 });
 
-dialogClose.addEventListener("click", () => dialog.close());
+messageDialogClose.addEventListener("click", () => dialog.close());
 dialog.addEventListener("click", (event) => {
   if (event.target === dialog) dialog.close();
+});
+
+imageDialogClose.addEventListener("click", () => imageDialog.close());
+previousImageButton.addEventListener("click", () => changeImage(-1));
+nextImageButton.addEventListener("click", () => changeImage(1));
+imageDialog.addEventListener("click", (event) => {
+  if (event.target === imageDialog) imageDialog.close();
+});
+imageDialog.addEventListener("keydown", (event) => {
+  if (event.key === "ArrowLeft" && !previousImageButton.hidden) changeImage(-1);
+  if (event.key === "ArrowRight" && !nextImageButton.hidden) changeImage(1);
+});
+imageDialog.addEventListener("close", () => {
+  lastImageTrigger?.focus({ preventScroll: true });
 });
 
 renderProducts();

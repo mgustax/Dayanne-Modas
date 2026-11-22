@@ -67,13 +67,28 @@
   </footer>
 
   <dialog class="message-dialog" id="message-dialog" aria-labelledby="dialog-title">
-    <button class="dialog-close" type="button" aria-label="Fechar prévia">×</button>
+    <button class="dialog-close message-dialog-close" type="button" aria-label="Fechar prévia">×</button>
     <p class="eyebrow">Mensagem pronta</p>
     <h2 id="dialog-title">Consultar pelo WhatsApp</h2>
     <p class="dialog-help">Confira a mensagem antes de abrir o aplicativo:</p>
     <div class="message-preview" id="message-preview"></div>
     <a class="button button--whatsapp" id="whatsapp-link" href="#" target="_blank" rel="noopener noreferrer">Abrir WhatsApp</a>
     <p class="manual-note">O envio só acontece quando você confirmar dentro do WhatsApp.</p>
+  </dialog>
+
+  <dialog class="image-dialog" id="image-dialog" aria-label="Visualização ampliada da peça">
+    <div class="image-dialog__content">
+      <button class="dialog-close image-dialog-close" type="button" aria-label="Fechar imagem ampliada">×</button>
+      <button class="image-nav image-nav--previous" type="button" aria-label="Ver foto anterior">‹</button>
+      <figure>
+        <img id="image-dialog-photo" src="" alt="">
+        <figcaption>
+          <span id="image-dialog-caption"></span>
+          <span id="image-dialog-counter" aria-live="polite"></span>
+        </figcaption>
+      </figure>
+      <button class="image-nav image-nav--next" type="button" aria-label="Ver próxima foto">›</button>
+    </div>
   </dialog>
 
   <script src="catalogo.js"></script>
