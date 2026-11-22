@@ -22,8 +22,18 @@
 
   <main>
     <section class="hero" id="inicio">
-      <div class="hero__media" aria-hidden="true">
-        <img src="imagens/look-assimetrico.jpeg" alt="" fetchpriority="high">
+      <div class="hero__media hero-carousel" id="hero-carousel" role="region" aria-label="Destaques do catálogo. Use as setas do teclado para navegar." aria-roledescription="carrossel" tabindex="0">
+        <button class="hero-carousel__product" id="hero-carousel-product" type="button">
+          <img id="hero-carousel-image" src="imagens/look-assimetrico.jpeg" alt="Modelo usando look preto assimétrico" fetchpriority="high">
+          <span class="hero-carousel__caption">
+            <strong id="hero-carousel-name">Look Assimétrico Noir</strong>
+            <span>Ver na vitrine</span>
+          </span>
+        </button>
+        <button class="hero-carousel__arrow hero-carousel__arrow--previous" type="button" aria-label="Ver destaque anterior">‹</button>
+        <button class="hero-carousel__arrow hero-carousel__arrow--next" type="button" aria-label="Ver próximo destaque">›</button>
+        <div class="hero-carousel__dots" id="hero-carousel-dots" role="group" aria-label="Escolher destaque"></div>
+        <p class="sr-only" id="hero-carousel-status" aria-live="polite"></p>
       </div>
       <div class="hero__content">
         <p class="eyebrow">Elegância em cada detalhe</p>

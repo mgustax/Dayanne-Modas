@@ -11,10 +11,26 @@ const imageDialogCounter = document.querySelector("#image-dialog-counter");
 const imageDialogClose = document.querySelector(".image-dialog-close");
 const previousImageButton = document.querySelector(".image-nav--previous");
 const nextImageButton = document.querySelector(".image-nav--next");
+const heroCarousel = document.querySelector("#hero-carousel");
+const heroCarouselProduct = document.querySelector("#hero-carousel-product");
+const heroCarouselImage = document.querySelector("#hero-carousel-image");
+const heroCarouselName = document.querySelector("#hero-carousel-name");
+const heroCarouselDots = document.querySelector("#hero-carousel-dots");
+const heroCarouselStatus = document.querySelector("#hero-carousel-status");
+
+const featuredProducts = CATALOGO.destaques
+  .map((id) => CATALOGO.produtos.find((product) => product.id === id))
+  .filter(Boolean);
+const HERO_CAROUSEL_INTERVAL = 5000;
 
 let activeImageProduct = null;
 let activeImageIndex = 0;
 let lastImageTrigger = null;
+let activeHeroSlide = 0;
+let heroTouchStartX = 0;
+let heroTouchStartY = 0;
+let heroSwipeTriggered = false;
+let heroCarouselTimer = null;
 
 function optionsMarkup(type, values, productId) {
   const label = type === "size" ? "Tamanho" : "Cor";
@@ -42,7 +58,10 @@ function colorValue(colorName) {
     "Rosa": "#e6a9b0",
     "Verde sálvia": "#aebd9e",
     "Vermelho": "#b62f2f",
-    "Cobre": "#a85f42"
+    "Cobre": "#a85f42",
+    "Dourado": "#c09a4a",
+    "Azul": "#2d65b1",
+    "Verde-oliva": "#68724a"
   };
   return colors[colorName] || "#b8aaa3";
 }
@@ -61,6 +80,7 @@ function productMarkup(product) {
           <span class="zoom-icon" aria-hidden="true">⌕</span>
         </button>
         <span class="product-tag">${product.categoriaLabel}</span>
+        ${images.length > 1 ? `<span class="product-photo-count">${images.length} fotos</span>` : ""}
       </div>
       <div class="product-card__body">
         <div class="product-card__heading"><h3>${product.nome}</h3><p>${product.preco}<small>valor de exemplo</small></p></div>
@@ -74,6 +94,75 @@ function productMarkup(product) {
 function renderProducts(filter = "todas") {
   const products = filter === "todas" ? CATALOGO.produtos : CATALOGO.produtos.filter((product) => product.categoria === filter);
   grid.innerHTML = products.map(productMarkup).join("");
+}
+
+function applyFilter(filterButton) {
+  filters.forEach((button) => {
+    const active = button === filterButton;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
+  renderProducts(filterButton.dataset.filter);
+}
+
+function heroDotsMarkup() {
+  return featuredProducts.map((product, index) => `
+    <button class="hero-carousel__dot" type="button" data-hero-slide="${index}" aria-label="Ver ${product.nome}" aria-current="${index === 0 ? "true" : "false"}"></button>
+  `).join("");
+}
+
+function updateHeroCarousel() {
+  const product = featuredProducts[activeHeroSlide];
+  if (!product) return;
+  heroCarouselImage.src = productImages(product)[0];
+  heroCarouselImage.alt = product.imagemAlt;
+  heroCarouselName.textContent = product.nome;
+  heroCarouselProduct.dataset.productTarget = product.id;
+  heroCarouselProduct.setAttribute("aria-label", `Ver ${product.nome} na vitrine`);
+  heroCarouselStatus.textContent = `${activeHeroSlide + 1} de ${featuredProducts.length}: ${product.nome}`;
+  heroCarouselDots.querySelectorAll(".hero-carousel__dot").forEach((dot, index) => {
+    const active = index === activeHeroSlide;
+    dot.classList.toggle("is-active", active);
+    dot.setAttribute("aria-current", String(active));
+  });
+}
+
+function startHeroAutoplay() {
+  window.clearInterval(heroCarouselTimer);
+  if (featuredProducts.length < 2 || document.hidden) return;
+  heroCarouselTimer = window.setInterval(() => {
+    changeHeroSlide(1, false);
+  }, HERO_CAROUSEL_INTERVAL);
+}
+
+function changeHeroSlide(step, restartAutoplay = true) {
+  activeHeroSlide = (activeHeroSlide + step + featuredProducts.length) % featuredProducts.length;
+  updateHeroCarousel();
+  if (restartAutoplay) startHeroAutoplay();
+}
+
+function goToHeroSlide(index) {
+  activeHeroSlide = index;
+  updateHeroCarousel();
+  startHeroAutoplay();
+}
+
+function showProductCard(productId) {
+  let card = grid.querySelector(`[data-product-id="${productId}"]`);
+  if (!card) {
+    applyFilter(document.querySelector('[data-filter="todas"]'));
+    card = grid.querySelector(`[data-product-id="${productId}"]`);
+  }
+  if (!card) return;
+  card.scrollIntoView({ behavior: "smooth", block: "start" });
+  card.classList.add("is-highlighted");
+  window.setTimeout(() => card.classList.remove("is-highlighted"), 1400);
+}
+
+function renderHeroCarousel() {
+  if (!featuredProducts.length) return;
+  heroCarouselDots.innerHTML = heroDotsMarkup();
+  updateHeroCarousel();
 }
 
 function makeMessage(product, size, color) {
@@ -129,13 +218,47 @@ function changeImage(step) {
 
 filters.forEach((filterButton) => {
   filterButton.addEventListener("click", () => {
-    filters.forEach((button) => {
-      const active = button === filterButton;
-      button.classList.toggle("is-active", active);
-      button.setAttribute("aria-pressed", String(active));
-    });
-    renderProducts(filterButton.dataset.filter);
+    applyFilter(filterButton);
   });
+});
+
+heroCarousel.querySelector(".hero-carousel__arrow--previous").addEventListener("click", () => changeHeroSlide(-1));
+heroCarousel.querySelector(".hero-carousel__arrow--next").addEventListener("click", () => changeHeroSlide(1));
+heroCarouselDots.addEventListener("click", (event) => {
+  const dot = event.target.closest(".hero-carousel__dot");
+  if (dot) goToHeroSlide(Number(dot.dataset.heroSlide));
+});
+heroCarousel.addEventListener("keydown", (event) => {
+  if (event.key === "ArrowLeft") {
+    event.preventDefault();
+    changeHeroSlide(-1);
+  }
+  if (event.key === "ArrowRight") {
+    event.preventDefault();
+    changeHeroSlide(1);
+  }
+});
+heroCarousel.addEventListener("touchstart", (event) => {
+  const touch = event.changedTouches[0];
+  heroTouchStartX = touch.clientX;
+  heroTouchStartY = touch.clientY;
+  heroSwipeTriggered = false;
+}, { passive: true });
+heroCarousel.addEventListener("touchend", (event) => {
+  const touch = event.changedTouches[0];
+  const horizontalDistance = touch.clientX - heroTouchStartX;
+  const verticalDistance = touch.clientY - heroTouchStartY;
+  if (Math.abs(horizontalDistance) < 45 || Math.abs(horizontalDistance) <= Math.abs(verticalDistance)) return;
+  heroSwipeTriggered = true;
+  changeHeroSlide(horizontalDistance < 0 ? 1 : -1);
+}, { passive: true });
+heroCarouselProduct.addEventListener("click", (event) => {
+  if (heroSwipeTriggered) {
+    event.preventDefault();
+    heroSwipeTriggered = false;
+    return;
+  }
+  showProductCard(heroCarouselProduct.dataset.productTarget);
 });
 
 grid.addEventListener("click", (event) => {
@@ -167,5 +290,8 @@ imageDialog.addEventListener("keydown", (event) => {
 imageDialog.addEventListener("close", () => {
   lastImageTrigger?.focus({ preventScroll: true });
 });
+document.addEventListener("visibilitychange", startHeroAutoplay);
 
 renderProducts();
+renderHeroCarousel();
+startHeroAutoplay();

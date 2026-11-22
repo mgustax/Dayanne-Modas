@@ -4,12 +4,139 @@ const CATALOGO = {
     nome: "Dayanne Modas",
     whatsapp: "5581985939691"
   },
+  // Altere somente os IDs desta lista para trocar as peças do carrossel principal.
+  destaques: [
+    "look-assimetrico",
+    "macacao-rosa",
+    "conjunto-brisa",
+    "blazer-lumiere",
+    "biquini-azul"
+  ],
   produtos: [
-    { id: "look-assimetrico", nome: "Look Assimétrico Noir", categoria: "feminina", categoriaLabel: "Moda feminina", preco: "R$ 189,90", imagem: "imagens/look-assimetrico.jpeg", imagemAlt: "Modelo usando blusa preta assimétrica e saia curta estampada", tamanhos: ["P", "M", "G"], cores: ["Preto"] },
-    { id: "conjunto-areia", nome: "Conjunto Fluido Areia", categoria: "feminina", categoriaLabel: "Moda feminina", preco: "R$ 219,90", imagem: "imagens/conjunto-areia.jpeg", imagemAlt: "Modelo usando conjunto de top e calça pantalona em tom areia", tamanhos: ["P", "M", "G"], cores: ["Areia", "Off-white"] },
-    { id: "macacao-rosa", nome: "Macacão Aurora", categoria: "feminina", categoriaLabel: "Moda feminina", preco: "R$ 199,90", imagem: "imagens/macacao-rosa.jpeg", imagemAlt: "Modelo usando macacão rosa claro", tamanhos: ["P", "M", "G", "GG"], cores: ["Rosa", "Verde sálvia", "Off-white"] },
-    { id: "conjunto-preto", nome: "Conjunto Serena", categoria: "feminina", categoriaLabel: "Moda feminina", preco: "R$ 229,90", imagem: "imagens/conjunto-preto.jpeg", imagemAlt: "Modelo usando conjunto preto longo com recortes", tamanhos: ["P", "M", "G"], cores: ["Preto"] },
-    { id: "biquini-vermelho", nome: "Biquíni Solar", categoria: "praia", categoriaLabel: "Moda praia", preco: "R$ 139,90", imagem: "imagens/biquini-vermelho.jpeg", imagemAlt: "Modelo usando biquíni vermelho", tamanhos: ["P", "M", "G"], cores: ["Vermelho", "Preto"] },
-    { id: "biquini-cobre", nome: "Biquíni Brisa com Saída", categoria: "praia", categoriaLabel: "Moda praia", preco: "R$ 169,90", imagem: "imagens/biquini-cobre.jpeg", imagemAlt: "Modelo usando biquíni e saída de praia em tom cobre", tamanhos: ["P", "M", "G"], cores: ["Cobre", "Preto"] }
+    {
+      id: "look-assimetrico",
+      nome: "Look Assimétrico Noir",
+      categoria: "feminina",
+      categoriaLabel: "Moda feminina",
+      preco: "R$ 189,90",
+      imagem: "imagens/look-assimetrico.jpeg",
+      imagens: ["imagens/look-assimetrico.jpeg", "imagens/look-assimetrico-noite.jpeg"],
+      imagemAlt: "Modelo usando look preto assimétrico",
+      tamanhos: ["P", "M", "G"],
+      cores: ["Preto"]
+    },
+    {
+      id: "conjunto-areia",
+      nome: "Conjunto Fluido Areia",
+      categoria: "feminina",
+      categoriaLabel: "Moda feminina",
+      preco: "R$ 219,90",
+      imagem: "imagens/conjunto-areia.jpeg",
+      imagens: ["imagens/conjunto-areia.jpeg", "imagens/conjunto-areia-externo.jpeg"],
+      imagemAlt: "Modelo usando conjunto de top e calça pantalona em tom areia",
+      tamanhos: ["P", "M", "G"],
+      cores: ["Areia", "Off-white"]
+    },
+    {
+      id: "macacao-rosa",
+      nome: "Macacão Aurora",
+      categoria: "feminina",
+      categoriaLabel: "Moda feminina",
+      preco: "R$ 199,90",
+      imagem: "imagens/macacao-rosa.jpeg",
+      imagens: ["imagens/macacao-rosa.jpeg", "imagens/macacao-offwhite.jpeg", "imagens/macacao-verde.jpeg"],
+      imagemAlt: "Modelo usando Macacão Aurora em diferentes cores",
+      tamanhos: ["P", "M", "G", "GG"],
+      cores: ["Rosa", "Verde sálvia", "Off-white"]
+    },
+    {
+      id: "conjunto-preto",
+      nome: "Conjunto Serena",
+      categoria: "feminina",
+      categoriaLabel: "Moda feminina",
+      preco: "R$ 229,90",
+      imagem: "imagens/conjunto-preto.jpeg",
+      imagens: ["imagens/conjunto-preto.jpeg", "imagens/conjunto-preto-estudio.jpeg"],
+      imagemAlt: "Modelo usando conjunto preto longo com recortes",
+      tamanhos: ["P", "M", "G"],
+      cores: ["Preto"]
+    },
+    {
+      id: "conjunto-brisa",
+      nome: "Conjunto Brisa Off-white",
+      categoria: "feminina",
+      categoriaLabel: "Moda feminina",
+      preco: "R$ 209,90",
+      imagem: "imagens/conjunto-brisa-offwhite.jpeg",
+      imagemAlt: "Modelo usando conjunto off-white com blusa de mangas amplas e short",
+      tamanhos: ["P", "M", "G"],
+      cores: ["Off-white"]
+    },
+    {
+      id: "blazer-lumiere",
+      nome: "Blazer Lumière",
+      categoria: "feminina",
+      categoriaLabel: "Moda feminina",
+      preco: "R$ 249,90",
+      imagem: "imagens/blazer-paete.jpeg",
+      imagemAlt: "Modelo usando blazer dourado com paetês",
+      tamanhos: ["P", "M", "G"],
+      cores: ["Dourado"]
+    },
+    {
+      id: "biquini-vermelho",
+      nome: "Biquíni Solar",
+      categoria: "praia",
+      categoriaLabel: "Moda praia",
+      preco: "R$ 139,90",
+      imagem: "imagens/biquini-vermelho.jpeg",
+      imagemAlt: "Modelo usando biquíni vermelho",
+      tamanhos: ["P", "M", "G"],
+      cores: ["Vermelho", "Preto"]
+    },
+    {
+      id: "biquini-cobre",
+      nome: "Biquíni Brisa com Saída",
+      categoria: "praia",
+      categoriaLabel: "Moda praia",
+      preco: "R$ 169,90",
+      imagem: "imagens/biquini-cobre.jpeg",
+      imagemAlt: "Modelo usando biquíni e saída de praia em tom cobre",
+      tamanhos: ["P", "M", "G"],
+      cores: ["Cobre", "Preto"]
+    },
+    {
+      id: "biquini-azul",
+      nome: "Biquíni Oceano",
+      categoria: "praia",
+      categoriaLabel: "Moda praia",
+      preco: "R$ 139,90",
+      imagem: "imagens/biquini-azul.jpeg",
+      imagemAlt: "Modelo usando biquíni azul",
+      tamanhos: ["P", "M", "G"],
+      cores: ["Azul"]
+    },
+    {
+      id: "biquini-oliva",
+      nome: "Biquíni Enseada",
+      categoria: "praia",
+      categoriaLabel: "Moda praia",
+      preco: "R$ 149,90",
+      imagem: "imagens/biquini-oliva.jpeg",
+      imagemAlt: "Modelo usando biquíni verde-oliva na praia",
+      tamanhos: ["P", "M", "G"],
+      cores: ["Verde-oliva"]
+    },
+    {
+      id: "biquini-offwhite",
+      nome: "Biquíni Pérola",
+      categoria: "praia",
+      categoriaLabel: "Moda praia",
+      preco: "R$ 159,90",
+      imagem: "imagens/biquini-offwhite.jpeg",
+      imagemAlt: "Modelo usando biquíni off-white",
+      tamanhos: ["P", "M", "G"],
+      cores: ["Off-white"]
+    }
   ]
 };
