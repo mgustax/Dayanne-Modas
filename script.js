@@ -45,7 +45,7 @@ function optionsMarkup(type, values, productId) {
         ${values.map((value, index) => {
           const inputId = `${name}-${index}`;
           const colorSample = type === "color" ? `<span class="color-sample" style="--sample-color: ${colorValue(value)}" aria-hidden="true"></span>` : "";
-          return `<input class="option-input" type="radio" id="${inputId}" name="${name}" value="${value}" data-option="${type}"><label class="option-label${colorClass}" for="${inputId}">${colorSample}<span>${value}</span></label>`;
+          return `<input class="option-input" type="checkbox" id="${inputId}" name="${name}" value="${value}" data-option="${type}"><label class="option-label${colorClass}" for="${inputId}">${colorSample}<span>${value}</span></label>`;
         }).join("")}
       </div>
     </fieldset>`;
@@ -331,7 +331,18 @@ grid.addEventListener("click", (event) => {
 });
 
 grid.addEventListener("change", (event) => {
-  if (event.target.matches('.option-input')) event.target.closest(".product-card").querySelector(".selection-error").textContent = "";
+  if (!event.target.matches(".option-input")) return;
+
+  const input = event.target;
+  const optionGroup = input.closest(".option-group");
+
+  if (input.checked) {
+    optionGroup.querySelectorAll(".option-input").forEach((option) => {
+      if (option !== input) option.checked = false;
+    });
+  }
+
+  input.closest(".product-card").querySelector(".selection-error").textContent = "";
 });
 
 messageDialogClose.addEventListener("click", () => dialog.close());
