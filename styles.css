@@ -37,6 +37,7 @@ a { color: inherit; }
 .brand img { height: 124px; image-rendering: auto; object-fit: contain; width: 124px; }
 .instagram-link, .text-link { color: var(--terracotta-dark); font-weight: 700; text-underline-offset: 0.25rem; }
 .instagram-link { font-size: 0.875rem; position: absolute; right: clamp(1rem, 3vw, 2.5rem); }
+.editorial-hero { scroll-margin-top: 132px; }
 
 .eyebrow { color: var(--terracotta-dark); font-size: 0.76rem; font-weight: 700; letter-spacing: 0.18em; margin: 0 0 0.7rem; text-transform: uppercase; }
 h1, h2, h3, p { margin-top: 0; }
@@ -166,6 +167,7 @@ footer p { color: #bfaea7; font-size: 0.78rem; margin: 0; }
   .topbar { min-height: 104px; padding-bottom: 0.2rem; padding-top: 0.2rem; }
   .brand img { height: 96px; width: 96px; }
   .instagram-link { font-size: 0.78rem; right: 0.75rem; }
+  .editorial-hero { scroll-margin-top: 104px; }
   .image-dialog { padding: 0.75rem; }
   .image-dialog__content { grid-template-columns: 1fr; }
   .image-dialog figure { grid-column: 1; grid-row: 1; padding: 3.4rem 0 4.2rem; }
