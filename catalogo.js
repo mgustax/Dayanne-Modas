@@ -4,6 +4,11 @@ const CATALOGO = {
     nome: "Dayanne Modas",
     whatsapp: "5581985939691"
   },
+  // Fotos da abertura no desktop. "foto" indica a posição no array imagens do produto.
+  abertura: {
+    principal: { produtoId: "look-assimetrico", foto: 1 },
+    secundaria: { produtoId: "biquini-oliva", foto: 0 }
+  },
   // Altere somente os IDs desta lista para trocar as peças do carrossel principal.
   destaques: [
     "look-assimetrico",
@@ -22,6 +27,7 @@ const CATALOGO = {
       imagem: "imagens/look-assimetrico.jpeg",
       imagens: ["imagens/look-assimetrico.jpeg", "imagens/look-assimetrico-noite.jpeg"],
       imagemAlt: "Modelo usando look preto assimétrico",
+      cardPosition: "center 32%",
       tamanhos: ["P", "M", "G"],
       cores: ["Preto"]
     },
@@ -34,6 +40,7 @@ const CATALOGO = {
       imagem: "imagens/conjunto-areia.jpeg",
       imagens: ["imagens/conjunto-areia.jpeg", "imagens/conjunto-areia-externo.jpeg"],
       imagemAlt: "Modelo usando conjunto de top e calça pantalona em tom areia",
+      cardPosition: "center 42%",
       tamanhos: ["P", "M", "G"],
       cores: ["Areia", "Off-white"]
     },
@@ -46,6 +53,7 @@ const CATALOGO = {
       imagem: "imagens/macacao-rosa.jpeg",
       imagens: ["imagens/macacao-rosa.jpeg", "imagens/macacao-offwhite.jpeg", "imagens/macacao-verde.jpeg"],
       imagemAlt: "Modelo usando Macacão Aurora em diferentes cores",
+      cardPosition: "center 18%",
       tamanhos: ["P", "M", "G", "GG"],
       cores: ["Rosa", "Verde sálvia", "Off-white"]
     },
@@ -58,6 +66,7 @@ const CATALOGO = {
       imagem: "imagens/conjunto-preto.jpeg",
       imagens: ["imagens/conjunto-preto.jpeg", "imagens/conjunto-preto-estudio.jpeg"],
       imagemAlt: "Modelo usando conjunto preto longo com recortes",
+      cardPosition: "center 38%",
       tamanhos: ["P", "M", "G"],
       cores: ["Preto"]
     },
@@ -69,6 +78,7 @@ const CATALOGO = {
       preco: "R$ 209,90",
       imagem: "imagens/conjunto-brisa-offwhite.jpeg",
       imagemAlt: "Modelo usando conjunto off-white com blusa de mangas amplas e short",
+      cardPosition: "center 40%",
       tamanhos: ["P", "M", "G"],
       cores: ["Off-white"]
     },
@@ -80,6 +90,7 @@ const CATALOGO = {
       preco: "R$ 249,90",
       imagem: "imagens/blazer-paete.jpeg",
       imagemAlt: "Modelo usando blazer dourado com paetês",
+      cardPosition: "center 20%",
       tamanhos: ["P", "M", "G"],
       cores: ["Dourado"]
     },
@@ -91,6 +102,7 @@ const CATALOGO = {
       preco: "R$ 139,90",
       imagem: "imagens/biquini-vermelho.jpeg",
       imagemAlt: "Modelo usando biquíni vermelho",
+      cardPosition: "center 28%",
       tamanhos: ["P", "M", "G"],
       cores: ["Vermelho", "Preto"]
     },
@@ -102,6 +114,7 @@ const CATALOGO = {
       preco: "R$ 169,90",
       imagem: "imagens/biquini-cobre.jpeg",
       imagemAlt: "Modelo usando biquíni e saída de praia em tom cobre",
+      cardPosition: "center 26%",
       tamanhos: ["P", "M", "G"],
       cores: ["Cobre", "Preto"]
     },
@@ -113,6 +126,7 @@ const CATALOGO = {
       preco: "R$ 139,90",
       imagem: "imagens/biquini-azul.jpeg",
       imagemAlt: "Modelo usando biquíni azul",
+      cardPosition: "center 30%",
       tamanhos: ["P", "M", "G"],
       cores: ["Azul"]
     },
@@ -124,6 +138,7 @@ const CATALOGO = {
       preco: "R$ 149,90",
       imagem: "imagens/biquini-oliva.jpeg",
       imagemAlt: "Modelo usando biquíni verde-oliva na praia",
+      cardPosition: "center 28%",
       tamanhos: ["P", "M", "G"],
       cores: ["Verde-oliva"]
     },
@@ -135,6 +150,7 @@ const CATALOGO = {
       preco: "R$ 159,90",
       imagem: "imagens/biquini-offwhite.jpeg",
       imagemAlt: "Modelo usando biquíni off-white",
+      cardPosition: "center 25%",
       tamanhos: ["P", "M", "G"],
       cores: ["Off-white"]
     }

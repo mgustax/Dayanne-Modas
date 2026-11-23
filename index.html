@@ -8,7 +8,7 @@
   <title>Dayanne Modas | Catálogo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Italiana&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -21,40 +21,59 @@
   </header>
 
   <main>
-    <section class="hero" id="inicio">
-      <div class="hero__media hero-carousel" id="hero-carousel" role="region" aria-label="Destaques do catálogo. Use as setas do teclado para navegar." aria-roledescription="carrossel" tabindex="0">
-        <button class="hero-carousel__product" id="hero-carousel-product" type="button">
-          <img id="hero-carousel-image" src="imagens/look-assimetrico.jpeg" alt="Modelo usando look preto assimétrico" fetchpriority="high">
-          <span class="hero-carousel__caption">
-            <strong id="hero-carousel-name">Look Assimétrico Noir</strong>
-            <span>Ver na vitrine</span>
-          </span>
-        </button>
-        <button class="hero-carousel__arrow hero-carousel__arrow--previous" type="button" aria-label="Ver destaque anterior">‹</button>
-        <button class="hero-carousel__arrow hero-carousel__arrow--next" type="button" aria-label="Ver próximo destaque">›</button>
-        <div class="hero-carousel__dots" id="hero-carousel-dots" role="group" aria-label="Escolher destaque"></div>
-        <p class="sr-only" id="hero-carousel-status" aria-live="polite"></p>
+    <section class="editorial-hero" id="inicio">
+      <div class="desktop-opening" aria-label="Destaques da coleção">
+        <div class="desktop-carousel" id="desktop-carousel" role="region" aria-label="Destaques da coleção" aria-roledescription="carrossel">
+          <div class="desktop-carousel__slides" id="desktop-carousel-slides"></div>
+          <button class="desktop-carousel__arrow desktop-carousel__arrow--previous" type="button" aria-label="Ver destaque anterior">‹</button>
+          <button class="desktop-carousel__arrow desktop-carousel__arrow--next" type="button" aria-label="Ver próximo destaque">›</button>
+          <div class="desktop-carousel__dots" id="desktop-carousel-dots" role="group" aria-label="Escolher destaque"></div>
+          <p class="sr-only" id="desktop-carousel-status" aria-live="polite"></p>
+        </div>
+        <div class="opening-copy">
+          <p class="eyebrow">Coleção Dayanne</p>
+          <h1>Da cidade<br>à praia</h1>
+          <p>Peças escolhidas para acompanhar seus dias com presença, leveza e personalidade.</p>
+          <a class="button button--primary" href="#catalogo">Ver catálogo</a>
+          <button class="opening-photo opening-photo--secondary" id="opening-secondary" type="button">
+            <img id="opening-secondary-image" src="" alt="">
+            <span id="opening-secondary-name"></span>
+          </button>
+        </div>
       </div>
-      <div class="hero__content">
-        <p class="eyebrow">Elegância em cada detalhe</p>
-        <h1>Seu próximo look começa aqui.</h1>
-        <p>Uma seleção especial de moda feminina e moda praia para você conhecer, escolher e consultar pelo WhatsApp.</p>
-        <a class="button button--primary" href="#catalogo">Ver peças</a>
+
+      <div class="mobile-opening">
+        <div class="mobile-opening__copy">
+          <p class="eyebrow">Coleção Dayanne</p>
+          <h1>Da cidade à praia</h1>
+          <a class="button button--primary" href="#catalogo">Ver catálogo</a>
+        </div>
+        <div class="mobile-carousel" id="hero-carousel" role="region" aria-label="Destaques do catálogo. Deslize ou use as setas para navegar." aria-roledescription="carrossel">
+          <div class="mobile-carousel__viewport" id="hero-carousel-viewport" tabindex="0">
+            <div class="mobile-carousel__track" id="hero-carousel-track"></div>
+          </div>
+          <div class="mobile-carousel__controls">
+            <button class="hero-carousel__arrow hero-carousel__arrow--previous" type="button" aria-label="Ver destaque anterior">‹</button>
+            <div class="hero-carousel__dots" id="hero-carousel-dots" role="group" aria-label="Escolher destaque"></div>
+            <button class="hero-carousel__arrow hero-carousel__arrow--next" type="button" aria-label="Ver próximo destaque">›</button>
+          </div>
+          <p class="sr-only" id="hero-carousel-status" aria-live="polite"></p>
+        </div>
       </div>
     </section>
 
     <section class="catalog-section" id="catalogo" aria-labelledby="catalog-title">
       <div class="section-heading">
-        <div>
-          <p class="eyebrow">Vitrine Dayanne</p>
-          <h2 id="catalog-title">Escolha seu favorito</h2>
-        </div>
-        <p class="demo-note"><strong>Demonstração:</strong> nomes, preços, tamanhos e cores abaixo são exemplos e ainda precisam ser confirmados pela loja.</p>
+        <p class="eyebrow">Vitrine Dayanne</p>
+        <h2 id="catalog-title">Escolha seu favorito</h2>
       </div>
-      <div class="filters" role="group" aria-label="Filtrar produtos">
-        <button class="filter is-active" type="button" data-filter="todas" aria-pressed="true">Todas</button>
-        <button class="filter" type="button" data-filter="feminina" aria-pressed="false">Moda feminina</button>
-        <button class="filter" type="button" data-filter="praia" aria-pressed="false">Moda praia</button>
+      <div class="catalog-toolbar">
+        <div class="filters" role="group" aria-label="Filtrar produtos">
+          <button class="filter is-active" type="button" data-filter="todas" aria-pressed="true">Todas</button>
+          <button class="filter" type="button" data-filter="feminina" aria-pressed="false">Moda feminina</button>
+          <button class="filter" type="button" data-filter="praia" aria-pressed="false">Moda praia</button>
+        </div>
+        <p class="demo-note"><strong>Demonstração:</strong> nomes, preços, tamanhos e cores são exemplos.</p>
       </div>
       <div class="product-grid" id="product-grid" aria-live="polite"></div>
     </section>

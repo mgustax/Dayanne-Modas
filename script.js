@@ -12,11 +12,17 @@ const imageDialogClose = document.querySelector(".image-dialog-close");
 const previousImageButton = document.querySelector(".image-nav--previous");
 const nextImageButton = document.querySelector(".image-nav--next");
 const heroCarousel = document.querySelector("#hero-carousel");
-const heroCarouselProduct = document.querySelector("#hero-carousel-product");
-const heroCarouselImage = document.querySelector("#hero-carousel-image");
-const heroCarouselName = document.querySelector("#hero-carousel-name");
+const heroCarouselViewport = document.querySelector("#hero-carousel-viewport");
+const heroCarouselTrack = document.querySelector("#hero-carousel-track");
 const heroCarouselDots = document.querySelector("#hero-carousel-dots");
 const heroCarouselStatus = document.querySelector("#hero-carousel-status");
+const desktopCarousel = document.querySelector("#desktop-carousel");
+const desktopCarouselSlides = document.querySelector("#desktop-carousel-slides");
+const desktopCarouselDots = document.querySelector("#desktop-carousel-dots");
+const desktopCarouselStatus = document.querySelector("#desktop-carousel-status");
+const openingSecondary = document.querySelector("#opening-secondary");
+const openingSecondaryImage = document.querySelector("#opening-secondary-image");
+const openingSecondaryName = document.querySelector("#opening-secondary-name");
 
 const featuredProducts = CATALOGO.destaques
   .map((id) => CATALOGO.produtos.find((product) => product.id === id))
@@ -27,10 +33,8 @@ let activeImageProduct = null;
 let activeImageIndex = 0;
 let lastImageTrigger = null;
 let activeHeroSlide = 0;
-let heroTouchStartX = 0;
-let heroTouchStartY = 0;
-let heroSwipeTriggered = false;
 let heroCarouselTimer = null;
+let heroScrollTimer = null;
 
 function optionsMarkup(type, values, productId) {
   const label = type === "size" ? "Tamanho" : "Cor";
@@ -76,7 +80,7 @@ function productMarkup(product) {
     <article class="product-card" data-category="${product.categoria}" data-product-id="${product.id}">
       <div class="product-card__image">
         <button class="product-card__image-button" type="button" data-image-product="${product.id}" aria-label="Ampliar foto de ${product.nome}">
-          <img src="${images[0]}" alt="${product.imagemAlt}" loading="lazy">
+          <img src="${images[0]}" alt="${product.imagemAlt}" loading="lazy" style="object-position: ${product.cardPosition || "center top"}">
           <span class="zoom-icon" aria-hidden="true">⌕</span>
         </button>
         <span class="product-tag">${product.categoriaLabel}</span>
@@ -111,20 +115,65 @@ function heroDotsMarkup() {
   `).join("");
 }
 
-function updateHeroCarousel() {
+function heroSlidesMarkup() {
+  return featuredProducts.map((product, index) => `
+    <button class="mobile-carousel__slide" type="button" data-product-target="${product.id}" data-slide-index="${index}" aria-label="Ver ${product.nome} na vitrine">
+      <img src="${productImages(product)[0]}" alt="${product.imagemAlt}" ${index === 0 ? 'fetchpriority="high"' : 'loading="lazy"'}>
+      <span>${product.nome}</span>
+    </button>
+  `).join("");
+}
+
+function desktopSlidesMarkup() {
+  return featuredProducts.map((product, index) => `
+    <button class="desktop-carousel__slide${index === 0 ? " is-active" : ""}" type="button" data-product-target="${product.id}" data-desktop-slide="${index}" aria-label="Ver ${product.nome} na vitrine" aria-hidden="${index === 0 ? "false" : "true"}" tabindex="${index === 0 ? "0" : "-1"}">
+      <img src="${productImages(product)[0]}" alt="${product.imagemAlt}" ${index === 0 ? 'fetchpriority="high"' : 'loading="lazy"'}>
+      <span>${product.nome}</span>
+    </button>
+  `).join("");
+}
+
+function updateHeroCarouselStatus() {
   const product = featuredProducts[activeHeroSlide];
   if (!product) return;
-  heroCarouselImage.src = productImages(product)[0];
-  heroCarouselImage.alt = product.imagemAlt;
-  heroCarouselName.textContent = product.nome;
-  heroCarouselProduct.dataset.productTarget = product.id;
-  heroCarouselProduct.setAttribute("aria-label", `Ver ${product.nome} na vitrine`);
   heroCarouselStatus.textContent = `${activeHeroSlide + 1} de ${featuredProducts.length}: ${product.nome}`;
   heroCarouselDots.querySelectorAll(".hero-carousel__dot").forEach((dot, index) => {
     const active = index === activeHeroSlide;
     dot.classList.toggle("is-active", active);
     dot.setAttribute("aria-current", String(active));
   });
+  desktopCarouselStatus.textContent = `${activeHeroSlide + 1} de ${featuredProducts.length}: ${product.nome}`;
+  desktopCarouselSlides.querySelectorAll(".desktop-carousel__slide").forEach((slide, index) => {
+    const active = index === activeHeroSlide;
+    slide.classList.toggle("is-active", active);
+    slide.setAttribute("aria-hidden", String(!active));
+    slide.tabIndex = active ? 0 : -1;
+  });
+  desktopCarouselDots.querySelectorAll(".desktop-carousel__dot").forEach((dot, index) => {
+    const active = index === activeHeroSlide;
+    dot.classList.toggle("is-active", active);
+    dot.setAttribute("aria-current", String(active));
+  });
+}
+
+function setOpeningPhoto(config, button, image, name) {
+  const product = CATALOGO.produtos.find((item) => item.id === config.produtoId);
+  if (!product) return;
+  const images = productImages(product);
+  image.src = images[Math.min(config.foto, images.length - 1)];
+  image.alt = product.imagemAlt;
+  name.textContent = product.nome;
+  button.dataset.productTarget = product.id;
+  button.setAttribute("aria-label", `Ver ${product.nome} na vitrine`);
+}
+
+function renderDesktopOpening() {
+  desktopCarouselSlides.innerHTML = desktopSlidesMarkup();
+  desktopCarouselDots.innerHTML = featuredProducts.map((product, index) => `
+    <button class="desktop-carousel__dot${index === 0 ? " is-active" : ""}" type="button" data-desktop-dot="${index}" aria-label="Ver ${product.nome}" aria-current="${index === 0 ? "true" : "false"}"></button>
+  `).join("");
+  setOpeningPhoto(CATALOGO.abertura.secundaria, openingSecondary, openingSecondaryImage, openingSecondaryName);
+  updateHeroCarouselStatus();
 }
 
 function startHeroAutoplay() {
@@ -137,14 +186,39 @@ function startHeroAutoplay() {
 
 function changeHeroSlide(step, restartAutoplay = true) {
   activeHeroSlide = (activeHeroSlide + step + featuredProducts.length) % featuredProducts.length;
-  updateHeroCarousel();
+  scrollToHeroSlide("smooth");
   if (restartAutoplay) startHeroAutoplay();
 }
 
 function goToHeroSlide(index) {
   activeHeroSlide = index;
-  updateHeroCarousel();
+  scrollToHeroSlide("smooth");
   startHeroAutoplay();
+}
+
+function scrollToHeroSlide(behavior) {
+  updateHeroCarouselStatus();
+  if (!window.matchMedia("(max-width: 767px)").matches) return;
+  const slide = heroCarouselTrack.children[activeHeroSlide];
+  if (!slide) return;
+  const trackPadding = Number.parseFloat(window.getComputedStyle(heroCarouselTrack).paddingLeft) || 0;
+  heroCarouselViewport.scrollTo({ left: slide.offsetLeft - trackPadding, behavior });
+}
+
+function syncSlideFromScroll() {
+  window.clearTimeout(heroScrollTimer);
+  heroScrollTimer = window.setTimeout(() => {
+    const viewportCenter = heroCarouselViewport.scrollLeft + heroCarouselViewport.clientWidth / 2;
+    const slides = [...heroCarouselTrack.children];
+    activeHeroSlide = slides.reduce((closestIndex, slide, index) => {
+      const currentDistance = Math.abs(slide.offsetLeft + slide.offsetWidth / 2 - viewportCenter);
+      const closest = slides[closestIndex];
+      const closestDistance = Math.abs(closest.offsetLeft + closest.offsetWidth / 2 - viewportCenter);
+      return currentDistance < closestDistance ? index : closestIndex;
+    }, 0);
+    updateHeroCarouselStatus();
+    startHeroAutoplay();
+  }, 100);
 }
 
 function showProductCard(productId) {
@@ -161,8 +235,9 @@ function showProductCard(productId) {
 
 function renderHeroCarousel() {
   if (!featuredProducts.length) return;
+  heroCarouselTrack.innerHTML = heroSlidesMarkup();
   heroCarouselDots.innerHTML = heroDotsMarkup();
-  updateHeroCarousel();
+  updateHeroCarouselStatus();
 }
 
 function makeMessage(product, size, color) {
@@ -224,6 +299,26 @@ filters.forEach((filterButton) => {
 
 heroCarousel.querySelector(".hero-carousel__arrow--previous").addEventListener("click", () => changeHeroSlide(-1));
 heroCarousel.querySelector(".hero-carousel__arrow--next").addEventListener("click", () => changeHeroSlide(1));
+desktopCarousel.querySelector(".desktop-carousel__arrow--previous").addEventListener("click", () => changeHeroSlide(-1));
+desktopCarousel.querySelector(".desktop-carousel__arrow--next").addEventListener("click", () => changeHeroSlide(1));
+desktopCarouselDots.addEventListener("click", (event) => {
+  const dot = event.target.closest(".desktop-carousel__dot");
+  if (dot) goToHeroSlide(Number(dot.dataset.desktopDot));
+});
+desktopCarouselSlides.addEventListener("click", (event) => {
+  const slide = event.target.closest("[data-product-target]");
+  if (slide) showProductCard(slide.dataset.productTarget);
+});
+desktopCarousel.addEventListener("keydown", (event) => {
+  if (event.key === "ArrowLeft") {
+    event.preventDefault();
+    changeHeroSlide(-1);
+  }
+  if (event.key === "ArrowRight") {
+    event.preventDefault();
+    changeHeroSlide(1);
+  }
+});
 heroCarouselDots.addEventListener("click", (event) => {
   const dot = event.target.closest(".hero-carousel__dot");
   if (dot) goToHeroSlide(Number(dot.dataset.heroSlide));
@@ -238,28 +333,12 @@ heroCarousel.addEventListener("keydown", (event) => {
     changeHeroSlide(1);
   }
 });
-heroCarousel.addEventListener("touchstart", (event) => {
-  const touch = event.changedTouches[0];
-  heroTouchStartX = touch.clientX;
-  heroTouchStartY = touch.clientY;
-  heroSwipeTriggered = false;
-}, { passive: true });
-heroCarousel.addEventListener("touchend", (event) => {
-  const touch = event.changedTouches[0];
-  const horizontalDistance = touch.clientX - heroTouchStartX;
-  const verticalDistance = touch.clientY - heroTouchStartY;
-  if (Math.abs(horizontalDistance) < 45 || Math.abs(horizontalDistance) <= Math.abs(verticalDistance)) return;
-  heroSwipeTriggered = true;
-  changeHeroSlide(horizontalDistance < 0 ? 1 : -1);
-}, { passive: true });
-heroCarouselProduct.addEventListener("click", (event) => {
-  if (heroSwipeTriggered) {
-    event.preventDefault();
-    heroSwipeTriggered = false;
-    return;
-  }
-  showProductCard(heroCarouselProduct.dataset.productTarget);
+heroCarouselViewport.addEventListener("scroll", syncSlideFromScroll, { passive: true });
+heroCarouselTrack.addEventListener("click", (event) => {
+  const slide = event.target.closest(".mobile-carousel__slide");
+  if (slide) showProductCard(slide.dataset.productTarget);
 });
+openingSecondary.addEventListener("click", () => showProductCard(openingSecondary.dataset.productTarget));
 
 grid.addEventListener("click", (event) => {
   const button = event.target.closest(".consult-button");
@@ -291,7 +370,9 @@ imageDialog.addEventListener("close", () => {
   lastImageTrigger?.focus({ preventScroll: true });
 });
 document.addEventListener("visibilitychange", startHeroAutoplay);
+window.addEventListener("resize", startHeroAutoplay);
 
 renderProducts();
+renderDesktopOpening();
 renderHeroCarousel();
 startHeroAutoplay();
