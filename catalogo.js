@@ -4,11 +4,6 @@ const CATALOGO = {
     nome: "Dayanne Modas",
     whatsapp: "5581985939691"
   },
-  // Fotos da abertura no desktop. "foto" indica a posição no array imagens do produto.
-  abertura: {
-    principal: { produtoId: "look-assimetrico", foto: 1 },
-    secundaria: { produtoId: "biquini-oliva", foto: 0 }
-  },
   // Altere somente os IDs desta lista para trocar as peças do carrossel principal.
   destaques: [
     "look-assimetrico",

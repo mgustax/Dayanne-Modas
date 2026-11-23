@@ -20,9 +20,6 @@ const desktopCarousel = document.querySelector("#desktop-carousel");
 const desktopCarouselSlides = document.querySelector("#desktop-carousel-slides");
 const desktopCarouselDots = document.querySelector("#desktop-carousel-dots");
 const desktopCarouselStatus = document.querySelector("#desktop-carousel-status");
-const openingSecondary = document.querySelector("#opening-secondary");
-const openingSecondaryImage = document.querySelector("#opening-secondary-image");
-const openingSecondaryName = document.querySelector("#opening-secondary-name");
 
 const featuredProducts = CATALOGO.destaques
   .map((id) => CATALOGO.produtos.find((product) => product.id === id))
@@ -156,23 +153,11 @@ function updateHeroCarouselStatus() {
   });
 }
 
-function setOpeningPhoto(config, button, image, name) {
-  const product = CATALOGO.produtos.find((item) => item.id === config.produtoId);
-  if (!product) return;
-  const images = productImages(product);
-  image.src = images[Math.min(config.foto, images.length - 1)];
-  image.alt = product.imagemAlt;
-  name.textContent = product.nome;
-  button.dataset.productTarget = product.id;
-  button.setAttribute("aria-label", `Ver ${product.nome} na vitrine`);
-}
-
 function renderDesktopOpening() {
   desktopCarouselSlides.innerHTML = desktopSlidesMarkup();
   desktopCarouselDots.innerHTML = featuredProducts.map((product, index) => `
     <button class="desktop-carousel__dot${index === 0 ? " is-active" : ""}" type="button" data-desktop-dot="${index}" aria-label="Ver ${product.nome}" aria-current="${index === 0 ? "true" : "false"}"></button>
   `).join("");
-  setOpeningPhoto(CATALOGO.abertura.secundaria, openingSecondary, openingSecondaryImage, openingSecondaryName);
   updateHeroCarouselStatus();
 }
 
@@ -338,8 +323,6 @@ heroCarouselTrack.addEventListener("click", (event) => {
   const slide = event.target.closest(".mobile-carousel__slide");
   if (slide) showProductCard(slide.dataset.productTarget);
 });
-openingSecondary.addEventListener("click", () => showProductCard(openingSecondary.dataset.productTarget));
-
 grid.addEventListener("click", (event) => {
   const button = event.target.closest(".consult-button");
   if (button) openPreview(button);
