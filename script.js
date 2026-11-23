@@ -33,16 +33,20 @@ let activeHeroSlide = 0;
 let heroCarouselTimer = null;
 let heroScrollTimer = null;
 
-function optionsMarkup(type, values, productId) {
+function optionsMarkup(type, values, product) {
+  const productId = product.id;
   const label = type === "size" ? "Tamanho" : "Cor";
   const name = `${productId}-${type}`;
   const colorClass = type === "color" ? " option-label--color" : "";
+  const availableValues = type === "color" && product.variantes
+    ? values.filter((value) => (product.variantes[value] || []).length > 0)
+    : values;
 
   return `
     <fieldset class="option-group" data-option-group="${type}" aria-describedby="${productId}-error">
       <legend>${label}</legend>
       <div class="option-list">
-        ${values.map((value, index) => {
+        ${availableValues.map((value, index) => {
           const inputId = `${name}-${index}`;
           const colorSample = type === "color" ? `<span class="color-sample" style="--sample-color: ${colorValue(value)}" aria-hidden="true"></span>` : "";
           return `<input class="option-input" type="checkbox" id="${inputId}" name="${name}" value="${value}" data-option="${type}"><label class="option-label${colorClass}" for="${inputId}">${colorSample}<span>${value}</span></label>`;
@@ -71,6 +75,12 @@ function productImages(product) {
   return Array.isArray(product.imagens) && product.imagens.length ? product.imagens : [product.imagem];
 }
 
+function variantImages(product, color) {
+  if (!color) return productImages(product);
+  if (product.variantes) return product.variantes[color] || [];
+  return product.cores.length === 1 ? productImages(product) : [];
+}
+
 function productMarkup(product) {
   const images = productImages(product);
   return `
@@ -80,12 +90,13 @@ function productMarkup(product) {
           <img src="${images[0]}" alt="${product.imagemAlt}" loading="lazy" style="object-position: ${product.cardPosition || "center top"}">
           <span class="zoom-icon" aria-hidden="true">⌕</span>
         </button>
+        <p class="variant-photo-status" role="status" hidden>Foto indisponível para esta cor</p>
         <span class="product-tag">${product.categoriaLabel}</span>
-        ${images.length > 1 ? `<span class="product-photo-count">${images.length} fotos</span>` : ""}
+        <span class="product-photo-count"${images.length > 1 ? "" : " hidden"}>${images.length} fotos</span>
       </div>
       <div class="product-card__body">
         <div class="product-card__heading"><h3>${product.nome}</h3><p>${product.preco}<small>valor de exemplo</small></p></div>
-        <div class="product-options">${optionsMarkup("size", product.tamanhos, product.id)}${optionsMarkup("color", product.cores, product.id)}</div>
+        <div class="product-options">${optionsMarkup("size", product.tamanhos, product)}${optionsMarkup("color", product.cores, product)}</div>
         <p class="selection-error" id="${product.id}-error" role="alert" aria-live="polite"></p>
         <button class="button button--outline consult-button" type="button" data-product="${product.id}">Consultar pelo WhatsApp</button>
       </div>
@@ -115,7 +126,7 @@ function heroDotsMarkup() {
 function heroSlidesMarkup() {
   return featuredProducts.map((product, index) => `
     <button class="mobile-carousel__slide" type="button" data-product-target="${product.id}" data-slide-index="${index}" aria-label="Ver ${product.nome} na vitrine">
-      <img src="${productImages(product)[0]}" alt="${product.imagemAlt}" ${index === 0 ? 'fetchpriority="high"' : 'loading="lazy"'}>
+      <img src="${productImages(product)[0]}" alt="${product.imagemAlt}" style="--hero-position: ${product.heroPosition || product.cardPosition || "center top"}" ${index === 0 ? 'fetchpriority="high"' : 'loading="lazy"'}>
       <span>${product.nome}</span>
     </button>
   `).join("");
@@ -124,7 +135,7 @@ function heroSlidesMarkup() {
 function desktopSlidesMarkup() {
   return featuredProducts.map((product, index) => `
     <button class="desktop-carousel__slide${index === 0 ? " is-active" : ""}" type="button" data-product-target="${product.id}" data-desktop-slide="${index}" aria-label="Ver ${product.nome} na vitrine" aria-hidden="${index === 0 ? "false" : "true"}" tabindex="${index === 0 ? "0" : "-1"}">
-      <img src="${productImages(product)[0]}" alt="${product.imagemAlt}" ${index === 0 ? 'fetchpriority="high"' : 'loading="lazy"'}>
+      <img src="${productImages(product)[0]}" alt="${product.imagemAlt}" style="--hero-position: ${product.heroPosition || product.cardPosition || "center top"}" ${index === 0 ? 'fetchpriority="high"' : 'loading="lazy"'}>
       <span>${product.nome}</span>
     </button>
   `).join("");
@@ -252,8 +263,34 @@ function openPreview(button) {
   dialog.showModal();
 }
 
+function updateCardVariant(card, product, color) {
+  const images = variantImages(product, color);
+  const imageWrapper = card.querySelector(".product-card__image");
+  const imageButton = card.querySelector(".product-card__image-button");
+  const image = imageButton.querySelector("img");
+  const status = card.querySelector(".variant-photo-status");
+  const counter = card.querySelector(".product-photo-count");
+  const unavailable = images.length === 0;
+
+  imageWrapper.classList.toggle("is-unavailable", unavailable);
+  imageButton.disabled = unavailable;
+  imageButton.dataset.selectedColor = color;
+  status.hidden = !unavailable;
+  counter.hidden = unavailable || images.length < 2;
+  counter.textContent = images.length > 1 ? `${images.length} fotos` : "";
+
+  if (unavailable) {
+    imageButton.setAttribute("aria-label", `${product.nome}, foto indisponível na cor ${color}`);
+    return;
+  }
+
+  image.src = images[0];
+  image.alt = `${product.nome} na cor ${color}`;
+  imageButton.setAttribute("aria-label", `Ampliar foto de ${product.nome} na cor ${color}`);
+}
+
 function updateImageDialog() {
-  const images = productImages(activeImageProduct);
+  const images = variantImages(activeImageProduct, activeImageProduct.selectedColor);
   imageDialogPhoto.src = images[activeImageIndex];
   imageDialogPhoto.alt = activeImageProduct.imagemAlt;
   imageDialogCaption.textContent = activeImageProduct.nome;
@@ -264,6 +301,7 @@ function updateImageDialog() {
 
 function openImagePreview(button) {
   activeImageProduct = CATALOGO.produtos.find((item) => item.id === button.dataset.imageProduct);
+  activeImageProduct = { ...activeImageProduct, selectedColor: button.dataset.selectedColor || null };
   activeImageIndex = 0;
   lastImageTrigger = button;
   updateImageDialog();
@@ -271,7 +309,7 @@ function openImagePreview(button) {
 }
 
 function changeImage(step) {
-  const images = productImages(activeImageProduct);
+  const images = variantImages(activeImageProduct, activeImageProduct.selectedColor);
   activeImageIndex = (activeImageIndex + step + images.length) % images.length;
   updateImageDialog();
 }
@@ -342,7 +380,13 @@ grid.addEventListener("change", (event) => {
     });
   }
 
-  input.closest(".product-card").querySelector(".selection-error").textContent = "";
+  const card = input.closest(".product-card");
+  card.querySelector(".selection-error").textContent = "";
+
+  if (input.dataset.option === "color" && input.checked) {
+    const product = CATALOGO.produtos.find((item) => item.id === card.dataset.productId);
+    updateCardVariant(card, product, input.value);
+  }
 });
 
 messageDialogClose.addEventListener("click", () => dialog.close());

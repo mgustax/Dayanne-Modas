@@ -10,7 +10,7 @@ const CATALOGO = {
     "macacao-rosa",
     "conjunto-brisa",
     "blazer-lumiere",
-    "biquini-azul"
+    "conjunto-areia"
   ],
   produtos: [
     {
@@ -34,6 +34,13 @@ const CATALOGO = {
       preco: "R$ 219,90",
       imagem: "imagens/conjunto-areia.jpeg",
       imagens: ["imagens/conjunto-areia.jpeg", "imagens/conjunto-areia-externo.jpeg"],
+      variantes: {
+        "Areia": ["imagens/conjunto-areia.jpeg", "imagens/conjunto-areia-externo.jpeg"],
+        "Off-white": []
+      },
+      arquivosVariantesAusentes: {
+        "Off-white": ["imagens/conjunto-areia-offwhite.jpeg"]
+      },
       imagemAlt: "Modelo usando conjunto de top e calça pantalona em tom areia",
       cardPosition: "center 42%",
       tamanhos: ["P", "M", "G"],
@@ -47,6 +54,11 @@ const CATALOGO = {
       preco: "R$ 199,90",
       imagem: "imagens/macacao-rosa.jpeg",
       imagens: ["imagens/macacao-rosa.jpeg", "imagens/macacao-offwhite.jpeg", "imagens/macacao-verde.jpeg"],
+      variantes: {
+        "Rosa": ["imagens/macacao-rosa.jpeg"],
+        "Verde sálvia": ["imagens/macacao-verde.jpeg"],
+        "Off-white": ["imagens/macacao-offwhite.jpeg"]
+      },
       imagemAlt: "Modelo usando Macacão Aurora em diferentes cores",
       cardPosition: "center 18%",
       tamanhos: ["P", "M", "G", "GG"],
@@ -74,6 +86,7 @@ const CATALOGO = {
       imagem: "imagens/conjunto-brisa-offwhite.jpeg",
       imagemAlt: "Modelo usando conjunto off-white com blusa de mangas amplas e short",
       cardPosition: "center 40%",
+      heroPosition: "center 38%",
       tamanhos: ["P", "M", "G"],
       cores: ["Off-white"]
     },
@@ -96,6 +109,13 @@ const CATALOGO = {
       categoriaLabel: "Moda praia",
       preco: "R$ 139,90",
       imagem: "imagens/biquini-vermelho.jpeg",
+      variantes: {
+        "Vermelho": ["imagens/biquini-vermelho.jpeg"],
+        "Preto": []
+      },
+      arquivosVariantesAusentes: {
+        "Preto": ["imagens/biquini-solar-preto.jpeg"]
+      },
       imagemAlt: "Modelo usando biquíni vermelho",
       cardPosition: "center 28%",
       tamanhos: ["P", "M", "G"],
@@ -108,6 +128,13 @@ const CATALOGO = {
       categoriaLabel: "Moda praia",
       preco: "R$ 169,90",
       imagem: "imagens/biquini-cobre.jpeg",
+      variantes: {
+        "Cobre": ["imagens/biquini-cobre.jpeg"],
+        "Preto": []
+      },
+      arquivosVariantesAusentes: {
+        "Preto": ["imagens/biquini-brisa-preto.jpeg"]
+      },
       imagemAlt: "Modelo usando biquíni e saída de praia em tom cobre",
       cardPosition: "center 26%",
       tamanhos: ["P", "M", "G"],
